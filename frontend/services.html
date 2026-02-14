@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Services</title>
+</head>
+<body>
+
+<h1>Services (From Backend)</h1>
+
+<ul id="service-list"></ul>
+
+<script>
+fetch("http://<EC2-PUBLIC-IP>:5000/api/services")
+  .then(response => response.json())
+  .then(data => {
+      const list = document.getElementById("service-list");
+      data.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          list.appendChild(li);
+      });
+  })
+  .catch(error => console.error(error));
+</script>
+
+<a href="index.html">Back to Home</a>
+
+</body>
+</html>
+
