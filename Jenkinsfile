@@ -35,16 +35,23 @@ pipeline {
         }
 
         stage('OWASP Dependency Check') {
-            steps {
-                sh '''
-                /opt/dependency-check/bin/dependency-check.sh \
-                --project devsecops \
-                --scan . \
-                --format HTML \
-                --failOnCVSS 7
-                '''
-            }
+    steps {
+        withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
+            sh '''
+            /opt/dependency-check/bin/dependency-check.sh \
+            --project devsecops \
+            --scan . \
+            --format HTML \
+            --out dependency-check-report \
+            --nvdApiKey $NVD_KEY \
+            --failOnCVSS 7
+            '''
         }
+        archiveArtifacts artifacts: 'dependency-check-report/*', fingerprint: true
+    }
+}
+
+
 
         stage('Trivy Filesystem Scan') {
             steps {
