@@ -2,9 +2,10 @@ pipeline {
     agent { label 'docker-agent' }
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo "Code pulled automatically from GitHub"
+                checkout scm
             }
         }
 
@@ -13,6 +14,27 @@ pipeline {
                 sh 'ls -la'
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                    sonar-scanner \
+                    -Dsonar.projectKey=devsecops-project \
+                    -Dsonar.sources=.
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
 }
+
 
