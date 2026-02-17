@@ -44,12 +44,14 @@ pipeline {
             --format HTML \
             --out dependency-check-report \
             --nvdApiKey $NVD_KEY \
+            --nvdApiDelay 6000 \
             --failOnCVSS 7
             '''
         }
         archiveArtifacts artifacts: 'dependency-check-report/*', fingerprint: true
     }
 }
+
 
 
 
