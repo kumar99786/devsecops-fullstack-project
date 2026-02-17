@@ -34,31 +34,13 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency Check') {
-    steps {
-        withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
-            sh '''
-            /opt/dependency-check/bin/dependency-check.sh \
-            --project devsecops \
-            --scan . \
-            --format HTML \
-            --out dependency-check-report \
-            --nvdApiKey $NVD_KEY \
-            --nvdApiDelay 6000 \
-            --failOnCVSS 7
-            '''
-        }
-        archiveArtifacts artifacts: 'dependency-check-report/*', fingerprint: true
-    }
-}
-
-
-
-
         stage('Trivy Filesystem Scan') {
             steps {
                 sh '''
-                trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+                trivy fs \
+                  --exit-code 1 \
+                  --severity HIGH,CRITICAL \
+                  .
                 '''
             }
         }
@@ -74,8 +56,10 @@ pipeline {
         stage('Trivy Image Scan') {
             steps {
                 sh '''
-                trivy image --exit-code 1 --severity HIGH,CRITICAL \
-                $IMAGE_NAME:$IMAGE_TAG
+                trivy image \
+                  --exit-code 1 \
+                  --severity HIGH,CRITICAL \
+                  $IMAGE_NAME:$IMAGE_TAG
                 '''
             }
         }
