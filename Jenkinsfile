@@ -1,8 +1,7 @@
 pipeline {
-    agent { label 'docker-agent' }
+    agent any   // safer than custom label for now
 
     options {
-        // Keep only last 5 builds
         buildDiscarder(logRotator(
             numToKeepStr: '5',
             artifactNumToKeepStr: '5'
@@ -14,7 +13,6 @@ pipeline {
         IMAGE_NAME = "devsecops-app"
         IMAGE_TAG  = "${BUILD_NUMBER}"
 
-        // Environment variables for testing
         DB_HOST = "localhost"
         DB_USER = "testuser"
         DB_NAME = "testdb"
@@ -31,34 +29,35 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-                    cd backend
-                    python3 -m pip install --upgrade pip
-                    python3 -m pip install -r requirements.txt
-                    python3 -m pip install -r requirements-dev.txt
-                '''
+                dir('backend') {
+                    sh '''
+                        python3 -m pip install --upgrade pip
+                        python3 -m pip install -r requirements.txt
+                        python3 -m pip install -r requirements-dev.txt
+                    '''
+                }
             }
         }
 
-        stage('Run Unit Tests & Generate Coverage') {
+        stage('Run Unit Tests & Coverage') {
             steps {
-                sh '''
-                    cd backend
-                    python3 -m pytest --cov=app --cov-report=xml
-                '''
+                dir('backend') {
+                    sh 'python3 -m pytest --cov=app --cov-report=xml'
+                }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        cd backend
-                        sonar-scanner \
-                          -Dsonar.projectKey=devsecops-fullstack-project \
-                          -Dsonar.sources=. \
-                          -Dsonar.python.coverage.reportPaths=coverage.xml
-                    '''
+                    dir('backend') {
+                        sh '''
+                            sonar-scanner \
+                              -Dsonar.projectKey=devsecops-fullstack-project \
+                              -Dsonar.sources=. \
+                              -Dsonar.python.coverage.reportPaths=coverage.xml
+                        '''
+                    }
                 }
             }
         }
@@ -84,9 +83,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh '''
-                    docker build -t $IMAGE_NAME:$IMAGE_TAG ./backend
-                '''
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG ./backend'
             }
         }
 
@@ -104,10 +101,11 @@ pipeline {
 
     post {
         always {
-            sh '''
-                echo "Cleaning unused Docker resources..."
-                docker system prune -af --volumes || true
-            '''
+            script {
+                node {
+                    sh 'docker system prune -af --volumes || true'
+                }
+            }
             echo "Pipeline execution completed."
         }
 
