@@ -46,11 +46,12 @@ stage('Run Unit Tests & Coverage') {
     steps {
         dir('backend') {
             sh '''
-                ./venv/bin/pytest --cov=app --cov-report=xml
+                venv/bin/pytest --cov=backend.app --cov-report=xml
             '''
         }
     }
 }
+
 
 
 
