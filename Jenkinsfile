@@ -56,19 +56,22 @@ stage('Run Unit Tests & Coverage') {
     }
 }
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    dir('backend') {
-                        sh '''
-                            sonar-scanner \
-                              -Dsonar.projectKey=devsecops-fullstack-project \
-                              -Dsonar.sources=. \
-                              -Dsonar.python.coverage.reportPaths=coverage.xml
-                        '''
-                    }
-                }
+    steps {
+        script {
+            def scannerHome = tool 'SonarScanner'
+            withSonarQubeEnv('SonarQube') {
+                sh """
+                    cd backend
+                    ${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.projectKey=devsecops-fullstack-project \
+                      -Dsonar.sources=. \
+                      -Dsonar.python.coverage.reportPaths=coverage.xml
+                """
             }
         }
+    }
+}
+
 
         stage('Quality Gate') {
             steps {
