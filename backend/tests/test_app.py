@@ -1,5 +1,5 @@
 import pytest
-from backend.app import app
+from app import app
 from unittest.mock import patch
 
 
