@@ -64,16 +64,22 @@ stage('Run Unit Tests & Coverage') {
 
         stage('SonarQube Analysis') {
     steps {
-        withSonarQubeEnv('SonarQube') {
-            sh '''
-                sonar-scanner \
-                  -Dsonar.projectKey=devsecops-fullstack-project \
-                  -Dsonar.sources=backend \
-                  -Dsonar.python.coverage.reportPaths=backend/coverage.xml
-            '''
+        script {
+            def scannerHome = tool 'SonarScanner'
+            withSonarQubeEnv('SonarQube') {
+                withEnv(["PATH+SONAR=${scannerHome}/bin"]) {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=devsecops-fullstack-project \
+                          -Dsonar.sources=backend \
+                          -Dsonar.python.coverage.reportPaths=backend/coverage.xml
+                    '''
+                }
+            }
         }
     }
 }
+
 
 
 
