@@ -21,6 +21,11 @@ pipeline {
     }
 
     stages {
+        stage('DEBUG VERSION') {
+    steps {
+        echo "PIPELINE VERSION 3.0"
+    }
+}
 
         stage('Checkout') {
             steps {
