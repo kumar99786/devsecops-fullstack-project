@@ -28,7 +28,7 @@ def test_services(client):
     assert b"DevOps Automation" in response.data
 
 
-@patch("app.get_db_connection")
+@patch("backend.app.get_db_connection")
 def test_contact(mock_db, client):
     response = client.post(
         "/api/contact",
