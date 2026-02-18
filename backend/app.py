@@ -7,7 +7,11 @@ app = Flask(__name__)
 
 origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
-CORS(app, resources={r"/*": {"origins": origins}})
+CORS(
+    app,
+    resources={r"/*": {"origins": origins}},
+    supports_credentials=False
+)
 
 def get_db_connection():
     return mysql.connector.connect(
@@ -16,6 +20,7 @@ def get_db_connection():
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME")
     )
+
 
 
 @app.route("/")
