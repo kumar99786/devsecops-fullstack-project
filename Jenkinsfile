@@ -44,11 +44,11 @@ pipeline {
 
 stage('Run Unit Tests & Coverage') {
     steps {
-        dir('backend') {
-            sh '''
-                PYTHONPATH=. venv/bin/pytest --cov=app --cov-report=xml
-            '''
-        }
+        sh '''
+            backend/venv/bin/pytest backend \
+                --cov=backend/app.py \
+                --cov-report=xml
+        '''
     }
 }
 
