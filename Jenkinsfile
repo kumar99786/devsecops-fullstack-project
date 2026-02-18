@@ -33,10 +33,9 @@ pipeline {
         dir('backend') {
             sh '''
                 python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install -r requirements-dev.txt
+                ./venv/bin/pip install --upgrade pip
+                ./venv/bin/pip install -r requirements.txt
+                ./venv/bin/pip install -r requirements-dev.txt
             '''
         }
     }
@@ -46,12 +45,12 @@ stage('Run Unit Tests & Coverage') {
     steps {
         dir('backend') {
             sh '''
-                . venv/bin/activate
-                pytest --cov=app --cov-report=xml
+                ./venv/bin/pytest --cov=app --cov-report=xml
             '''
         }
     }
 }
+
 
 
         stage('SonarQube Analysis') {
