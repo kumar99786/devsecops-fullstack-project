@@ -1,19 +1,24 @@
 pipeline {
     agent { label 'docker-agent' }
 
+    options {
+        // Keep only last 5 builds
+        buildDiscarder(logRotator(
+            numToKeepStr: '5',
+            artifactNumToKeepStr: '5'
+        ))
+        timestamps()
+    }
+
     environment {
         IMAGE_NAME = "devsecops-app"
         IMAGE_TAG  = "${BUILD_NUMBER}"
 
-        // Database env vars (safe for tests)
+        // Environment variables for testing
         DB_HOST = "localhost"
         DB_USER = "testuser"
         DB_NAME = "testdb"
         DB_PASSWORD = credentials('mysql-password-id')
-    }
-
-    options {
-        timestamps()
     }
 
     stages {
@@ -99,11 +104,17 @@ pipeline {
 
     post {
         always {
+            sh '''
+                echo "Cleaning unused Docker resources..."
+                docker system prune -af --volumes || true
+            '''
             echo "Pipeline execution completed."
         }
+
         success {
             echo "Application passed all quality and security checks."
         }
+
         failure {
             echo "Pipeline failed. Check logs for details."
         }
