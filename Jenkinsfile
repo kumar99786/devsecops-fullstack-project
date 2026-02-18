@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "devsecops-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        DB_PASSWORD = credentials('mysql-password-id')
     }
 
     stages {
