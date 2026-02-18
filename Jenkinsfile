@@ -68,11 +68,10 @@ stage('Run Unit Tests & Coverage') {
             def scannerHome = tool 'SonarScanner'
             withSonarQubeEnv('SonarQube') {
                 sh """
-                    cd backend
                     ${scannerHome}/bin/sonar-scanner \
                       -Dsonar.projectKey=devsecops-fullstack-project \
-                      -Dsonar.sources=. \
-                      -Dsonar.python.coverage.reportPaths=coverage.xml
+                      -Dsonar.sources=backend \
+                      -Dsonar.python.coverage.reportPaths=backend/coverage.xml
                 """
             }
         }
