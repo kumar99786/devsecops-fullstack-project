@@ -1,5 +1,6 @@
 pipeline {
-    agent any   // safer than custom label for now
+    agent { label 'docker-agent' }
+
 
     options {
         buildDiscarder(logRotator(
