@@ -1,6 +1,7 @@
 import pytest
-from backend.app import app
+from app import app
 from unittest.mock import patch
+
 
 @pytest.fixture
 def client():
@@ -29,9 +30,6 @@ def test_services(client):
 
 @patch("app.get_db_connection")
 def test_contact(mock_db, client):
-    mock_conn = mock_db.return_value
-    mock_cursor = mock_conn.cursor.return_value
-
     response = client.post(
         "/api/contact",
         json={
@@ -43,4 +41,3 @@ def test_contact(mock_db, client):
 
     assert response.status_code == 201
     assert b"Contact saved successfully" in response.data
-
