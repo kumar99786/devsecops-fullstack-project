@@ -1,18 +1,22 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
 
+origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
+CORS(app, resources={r"/*": {"origins": origins}})
 
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="appuser",
-        password="apppassword",
-        database="devsecops_db"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
     )
+
 
 @app.route("/")
 def home():
