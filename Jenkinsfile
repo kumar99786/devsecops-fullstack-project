@@ -46,17 +46,15 @@ pipeline {
     }
 }
 
-
 stage('Run Unit Tests & Coverage') {
     steps {
         sh '''
-            backend/venv/bin/pytest backend/tests \
+            PYTHONPATH=. backend/venv/bin/pytest backend/tests \
               --cov=backend \
               --cov-report=xml
         '''
     }
 }
-
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
