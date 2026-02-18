@@ -29,24 +29,30 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
-                dir('backend') {
-                    sh '''
-                        python3 -m pip install --upgrade pip
-                        python3 -m pip install -r requirements.txt
-                        python3 -m pip install -r requirements-dev.txt
-                    '''
-                }
-            }
+    steps {
+        dir('backend') {
+            sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                pip install -r requirements-dev.txt
+            '''
         }
+    }
+}
 
-        stage('Run Unit Tests & Coverage') {
-            steps {
-                dir('backend') {
-                    sh 'python3 -m pytest --cov=app --cov-report=xml'
-                }
-            }
+stage('Run Unit Tests & Coverage') {
+    steps {
+        dir('backend') {
+            sh '''
+                . venv/bin/activate
+                pytest --cov=app --cov-report=xml
+            '''
         }
+    }
+}
+
 
         stage('SonarQube Analysis') {
             steps {
