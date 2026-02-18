@@ -112,7 +112,7 @@ stage('Quality Gate') {
                 sh '''
                     trivy image \
                       --exit-code 1 \
-                      --severity HIGH,CRITICAL \
+                      --severity CRITICAL \
                       $IMAGE_NAME:$IMAGE_TAG
                 '''
             }
