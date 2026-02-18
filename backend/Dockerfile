@@ -1,4 +1,11 @@
-FROM python:3.9-slim
+
+FROM python:3.12-slim
+
+# Install security updates
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
