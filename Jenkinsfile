@@ -45,9 +45,9 @@ pipeline {
 stage('Run Unit Tests & Coverage') {
     steps {
         sh '''
-            backend/venv/bin/pytest backend \
-                --cov=backend/app.py \
-                --cov-report=xml
+            backend/venv/bin/pytest backend/tests \
+              --cov=backend \
+              --cov-report=xml
         '''
     }
 }
