@@ -51,10 +51,11 @@ stage('Run Unit Tests & Coverage') {
         sh '''
             PYTHONPATH=. backend/venv/bin/pytest backend/tests \
               --cov=backend \
-              --cov-report=xml
+              --cov-report=xml:backend/coverage.xml
         '''
     }
 }
+
         stage('SonarQube Analysis') {
     steps {
         script {
